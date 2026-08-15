@@ -481,6 +481,11 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
                                 Toast.makeText(mContext, "配置已切换,即将重新加载!", Toast.LENGTH_SHORT).show();
                                 SourceViewModel.clearRuntimeCache();
                                 new android.os.Handler().postDelayed(() -> {
+                                    if (mActivity == null || mActivity.isFinishing()
+                                            || (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1
+                                            && mActivity.isDestroyed())) {
+                                        return;
+                                    }
                                     android.content.Intent intent = new android.content.Intent(
                                             mContext, com.github.tvbox.osc.ui.activity.HomeActivity.class);
                                     intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK

@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatCheckBox;
 
 import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.util.HawkConfig;
@@ -28,13 +28,13 @@ public class HomeMenuDialog extends BaseDialog {
         LinearLayout list = findViewById(R.id.homeMenuList);
         ArrayList<String> checked = Hawk.get(HawkConfig.HOME_MENU, new ArrayList<>(MENUS));
         for (String menu : MENUS) {
-            CheckBox checkBox = new CheckBox(context);
+            AppCompatCheckBox checkBox = new AppCompatCheckBox(context);
             checkBox.setText(menu);
             checkBox.setTextColor(context.getResources().getColor(R.color.dialog_text_primary));
             checkBox.setTextSize(22);
             checkBox.setBackgroundResource(R.drawable.button_danmu_setting);
             checkBox.setPadding(20, 8, 20, 8);
-            checkBox.setButtonTintList(new ColorStateList(
+            checkBox.setSupportButtonTintList(new ColorStateList(
                     new int[][]{new int[]{android.R.attr.state_checked}, new int[]{}},
                     new int[]{0xff02f8e1, Color.WHITE}));
             checkBox.setFocusable(true);
