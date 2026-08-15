@@ -34,6 +34,8 @@ import com.github.tvbox.osc.ui.dialog.ApiDialog;
 import com.github.tvbox.osc.ui.dialog.ApiHistoryDialog;
 import com.github.tvbox.osc.ui.dialog.BackupDialog;
 import com.github.tvbox.osc.ui.dialog.DanmuApiDialog;
+import com.github.tvbox.osc.ui.dialog.HomeMenuDialog;
+import com.github.tvbox.osc.ui.dialog.HomePasswordDialog;
 import com.github.tvbox.osc.ui.dialog.SearchRemoteTvDialog;
 import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.ui.dialog.XWalkInitDialog;
@@ -140,10 +142,10 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvScale = findViewById(R.id.tvScaleType);
         llApi = findViewById(R.id.llApi);
         llApiHistory = findViewById(R.id.llApiHistory);
-        llApiLine = findViewById(R.id.llApiLine);
+        llApiLine = findViewById(R.id.llHomeApiTop);
         tvApi = findViewById(R.id.tvApi);
-        tvApiLine = findViewById(R.id.tvApiLine);
-        tvHomeApi = findViewById(R.id.tvHomeApi);
+        tvApiLine = findViewById(R.id.tvHomeApiTop);
+        tvHomeApi = findViewById(R.id.tvHomeApiTop);
         tvDns = findViewById(R.id.tvDns);
         tvHomeRec = findViewById(R.id.tvHomeRec);
         tvHistoryNum = findViewById(R.id.tvHistoryNum);
@@ -244,7 +246,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 ((BaseActivity) requireActivity()).changeWallpaper(true);
             }
         });
-        findViewById(R.id.llHomeApi).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.llHomeApiTop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
@@ -397,51 +399,14 @@ public class ModelSettingFragment extends BaseLazyFragment {
             }
         });
 
-        findViewById(R.id.llApiLine).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.llHomeApi).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> apiLines = Hawk.get(HawkConfig.API_LINE_LIST, new ArrayList<String>());
-                if (apiLines.isEmpty()) {
-                    Toast.makeText(mContext, "线路列表为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                String current = Hawk.get(HawkConfig.API_URL, "");
-                int idx = 0;
-                for (int i = 0; i < apiLines.size(); i++) {
-                    if (current.equals(HistoryHelper.getApiLineUrl(apiLines.get(i)))) {
-                        idx = i;
-                        break;
-                    }
-                }
-                SelectDialog<String> dialog = new SelectDialog<>(mActivity);
-                dialog.setTip("线路选择");
-                dialog.setAdapter(new SelectDialogAdapter.SelectDialogInterface<String>() {
-                    @Override
-                    public void click(String value, int pos) {
-                        String newApi = HistoryHelper.getApiLineUrl(value);
-                        String oldApi = Hawk.get(HawkConfig.API_URL, "");
-                        if (newApi.isEmpty()) {
-                            return;
-                        }
-                        Hawk.put(HawkConfig.API_URL, newApi);
-                        Hawk.put(HawkConfig.LIVE_API_URL, newApi);
-                        HistoryHelper.setLiveApiHistory(newApi);
-                        tvApi.setText(newApi);
-                        refreshApiLineText();
-                        dialog.dismiss();
-                        if (!oldApi.equals(newApi)) {
-                            restartAppAfterConfigChanged();
-                        }
-                    }
-
-                    @Override
-                    public String getDisplay(String val) {
-                        return HistoryHelper.getApiLineName(val);
-                    }
-                }, SelectDialogAdapter.stringDiff, apiLines, idx);
-                dialog.show();
+                new HomeMenuDialog(mActivity).show();
             }
         });
+
+        findViewById(R.id.llPasswordLock).setOnClickListener(v -> new HomePasswordDialog(mActivity).show());
 
 
         findViewById(R.id.llMediaCodec).setOnClickListener(new View.OnClickListener() {
@@ -848,23 +813,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
 
     private void refreshApiLineText() {
         if (tvApiLine == null) return;
-        ArrayList<String> apiLines = Hawk.get(HawkConfig.API_LINE_LIST, new ArrayList<String>());
-        String current = Hawk.get(HawkConfig.API_URL, "");
-        boolean showLine = HistoryHelper.isApiLineUrl(current);
-        if (llApiLine != null) {
-            llApiLine.setVisibility(showLine ? View.VISIBLE : View.GONE);
-        }
-        updateApiRowWeight(showLine);
-        String lineName = "";
-        if (showLine) {
-            for (String apiLine : apiLines) {
-                if (current.equals(HistoryHelper.getApiLineUrl(apiLine))) {
-                    lineName = HistoryHelper.getApiLineName(apiLine);
-                    break;
-                }
-            }
-        }
-        tvApiLine.setText(lineName);
+        tvApiLine.setText(ApiConfig.get().getHomeSourceBean().getName());
     }
 
     private void refreshDanmuApiText() {

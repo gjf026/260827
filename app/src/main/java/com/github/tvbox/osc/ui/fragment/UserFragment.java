@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,8 +30,10 @@ import com.github.tvbox.osc.ui.activity.PushActivity;
 import com.github.tvbox.osc.ui.activity.SearchActivity;
 import com.github.tvbox.osc.ui.activity.SettingActivity;
 import com.github.tvbox.osc.ui.adapter.HomeHotVodAdapter;
+import com.github.tvbox.osc.ui.dialog.HomePasswordDialog;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
+import com.github.tvbox.osc.util.HistoryHelper;
 import com.github.tvbox.osc.util.ImgUtil;
 import com.github.tvbox.osc.util.UA;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
@@ -67,6 +70,9 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     private LinearLayout tvHistory;
     private LinearLayout tvCollect;
     private LinearLayout tvPush;
+    private LinearLayout tvLine;
+    private LinearLayout tvUserHome;
+    private android.widget.HorizontalScrollView tvUserHomeScroll;
     public static HomeHotVodAdapter homeHotVodAdapter;
     private List<Movie.Video> homeSourceRec;
     public static TvRecyclerView tvHotList;
@@ -88,6 +94,7 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     @Override
     protected void onFragmentResume() {
         super.onFragmentResume();
+        applyHomeMenu();
         if (Hawk.get(HawkConfig.HOME_REC_STYLE, false)) {
             tvHotList.setVisibility(View.VISIBLE);
             tvHotList.setHasFixedSize(true);
@@ -125,6 +132,56 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         }
     }
 
+    private void applyHomeMenu() {
+        if (tvHistory == null) return;
+        ArrayList<String> defaultMenus = new ArrayList<>(java.util.Arrays.asList("历史", "直播", "搜索", "推送", "收藏", "设置"));
+        ArrayList<String> menus = Hawk.get(HawkConfig.HOME_MENU, defaultMenus);
+        tvHistory.setVisibility(menus.contains("历史") ? View.VISIBLE : View.GONE);
+        tvLive.setVisibility(menus.contains("直播") ? View.VISIBLE : View.GONE);
+        tvSearch.setVisibility(menus.contains("搜索") ? View.VISIBLE : View.GONE);
+        tvPush.setVisibility(menus.contains("推送") ? View.VISIBLE : View.GONE);
+        tvCollect.setVisibility(menus.contains("收藏") ? View.VISIBLE : View.GONE);
+        tvSetting.setVisibility(View.VISIBLE);
+        tvLine.setVisibility(View.VISIBLE);
+        updateHomeMenuFocus();
+    }
+
+    private void updateHomeMenuFocus() {
+        ArrayList<View> menus = new ArrayList<>();
+        menus.add(tvLine);
+        menus.add(tvHistory);
+        menus.add(tvLive);
+        menus.add(tvSearch);
+        menus.add(tvPush);
+        menus.add(tvCollect);
+        menus.add(tvSetting);
+        ArrayList<View> visible = new ArrayList<>();
+        for (View menu : menus) {
+            if (menu.getVisibility() == View.VISIBLE) visible.add(menu);
+        }
+        for (int i = 0; i < visible.size(); i++) {
+            View menu = visible.get(i);
+            View left = i > 0 ? visible.get(i - 1) : null;
+            View right = i + 1 < visible.size() ? visible.get(i + 1) : null;
+            menu.setNextFocusLeftId(left == null ? menu.getId() : left.getId());
+            menu.setNextFocusRightId(right == null ? menu.getId() : right.getId());
+            menu.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != android.view.KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && left == null) return true;
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_RIGHT && right == null) return true;
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && left != null) {
+                    left.requestFocus();
+                    return true;
+                }
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_RIGHT && right != null) {
+                    right.requestFocus();
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
     @Override
     protected int getLayoutResID() {
         return R.layout.fragment_user;
@@ -150,18 +207,27 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         tvCollect = findViewById(R.id.tvFavorite);
         tvHistory = findViewById(R.id.tvHistory);
         tvPush = findViewById(R.id.tvPush);
+        tvLine = findViewById(R.id.tvLine);
+        tvUserHome = findViewById(R.id.tvUserHome);
+        tvUserHomeScroll = findViewById(R.id.tvUserHomeScroll);
+        tvUserHome.setClipChildren(true);
+        tvUserHomeScroll.setClipChildren(true);
+        tvUserHome.removeView(tvLine);
+        tvUserHome.addView(tvLine, 0);
         tvLive.setOnClickListener(this);
         tvSearch.setOnClickListener(this);
         tvSetting.setOnClickListener(this);
         tvHistory.setOnClickListener(this);
         tvPush.setOnClickListener(this);
         tvCollect.setOnClickListener(this);
+        tvLine.setOnClickListener(this);
         tvLive.setOnFocusChangeListener(focusChangeListener);
         tvSearch.setOnFocusChangeListener(focusChangeListener);
         tvSetting.setOnFocusChangeListener(focusChangeListener);
         tvHistory.setOnFocusChangeListener(focusChangeListener);
         tvPush.setOnFocusChangeListener(focusChangeListener);
         tvCollect.setOnFocusChangeListener(focusChangeListener);
+        tvLine.setOnFocusChangeListener(focusChangeListener);
         tvHotList = findViewById(R.id.tvHotList);
         if (Hawk.get(HawkConfig.HOME_REC, HawkConfig.DEFAULT_HOME_REC) == 1 && homeSourceRec!=null) {
             style=ImgUtil.initStyle();
@@ -340,6 +406,26 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
                 v.animate().scaleX(1.05f).scaleY(1.05f).setDuration(300).setInterpolator(new BounceInterpolator()).start();
             else
                 v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(300).setInterpolator(new BounceInterpolator()).start();
+            if (hasFocus && tvUserHomeScroll != null) {
+                tvUserHomeScroll.post(() -> {
+                    if (v == tvLine) {
+                        tvUserHomeScroll.scrollTo(0, 0);
+                    } else if (v == tvSetting) {
+                        int maxScroll = Math.max(0, tvUserHome.getWidth() - tvUserHomeScroll.getWidth());
+                        tvUserHomeScroll.scrollTo(maxScroll, 0);
+                    } else {
+                        int left = v.getLeft();
+                        int right = v.getRight();
+                        int scrollLeft = tvUserHomeScroll.getScrollX();
+                        int viewportWidth = tvUserHomeScroll.getWidth();
+                        if (left < scrollLeft) {
+                            tvUserHomeScroll.scrollTo(left, 0);
+                        } else if (right > scrollLeft + viewportWidth) {
+                            tvUserHomeScroll.scrollTo(right - viewportWidth, 0);
+                        }
+                    }
+                });
+            }
         }
     };
 
@@ -355,11 +441,62 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         } else if (v.getId() == R.id.tvSearch) {
             jumpActivity(SearchActivity.class);
         } else if (v.getId() == R.id.tvSetting) {
-            jumpActivity(SettingActivity.class);
+            String password = Hawk.get(HawkConfig.HOME_PASSWORD, "");
+            if (password.isEmpty()) {
+                jumpActivity(SettingActivity.class);
+            } else {
+                new HomePasswordDialog(mActivity, true, () -> jumpActivity(SettingActivity.class)).show();
+            }
         } else if (v.getId() == R.id.tvHistory) {
             jumpActivity(HistoryActivity.class);
         } else if (v.getId() == R.id.tvPush) {
             jumpActivity(PushActivity.class);
+        } else if (v.getId() == R.id.tvLine) {
+            ArrayList<String> apiLines = Hawk.get(HawkConfig.API_LINE_LIST, new ArrayList<String>());
+            if (apiLines.isEmpty()) {
+                Toast.makeText(mContext, "线路列表为空", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String current = Hawk.get(HawkConfig.API_URL, "");
+            int idx = 0;
+            for (int i = 0; i < apiLines.size(); i++) {
+                if (current.equals(HistoryHelper.getApiLineUrl(apiLines.get(i)))) {
+                    idx = i;
+                    break;
+                }
+            }
+            com.github.tvbox.osc.ui.dialog.SelectDialog<String> dialog = new com.github.tvbox.osc.ui.dialog.SelectDialog<>(mActivity);
+            dialog.setTip("线路选择");
+            dialog.setAdapter(new com.github.tvbox.osc.ui.adapter.SelectDialogAdapter.SelectDialogInterface<String>() {
+                        @Override
+                        public void click(String value, int pos) {
+                            String newApi = HistoryHelper.getApiLineUrl(value);
+                            String oldApi = Hawk.get(HawkConfig.API_URL, "");
+                            if (newApi.isEmpty()) return;
+                            Hawk.put(HawkConfig.API_URL, newApi);
+                            Hawk.put(HawkConfig.LIVE_API_URL, newApi);
+                            HistoryHelper.setLiveApiHistory(newApi);
+                            dialog.dismiss();
+                            if (!oldApi.equals(newApi)) {
+                                Toast.makeText(mContext, "配置已切换,即将重新加载!", Toast.LENGTH_SHORT).show();
+                                SourceViewModel.clearRuntimeCache();
+                                new android.os.Handler().postDelayed(() -> {
+                                    android.content.Intent intent = new android.content.Intent(
+                                            mContext, com.github.tvbox.osc.ui.activity.HomeActivity.class);
+                                    intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                                            | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.putExtra("useCache", true);
+                                    mContext.startActivity(intent);
+                                }, 2500);
+                            }
+                        }
+
+                        @Override
+                        public String getDisplay(String val) {
+                            return HistoryHelper.getApiLineName(val);
+                        }
+                    }, com.github.tvbox.osc.ui.adapter.SelectDialogAdapter.stringDiff, apiLines, idx);
+            dialog.show();
         } else if (v.getId() == R.id.tvFavorite) {
             jumpActivity(CollectActivity.class);
         }
