@@ -4,8 +4,6 @@ Thumbs.db
 .DS_Store
 # Built application files
 *.apk
-*.idsig
-apk-output/*.bat
 #*.aar
 *.ap_
 *.aab
@@ -101,3 +99,7 @@ lint/tmp/
 *.hprof
 *.md
 output-metadata.json
+
+# Agent
+AGENTS.md
+CLAUDE.md
