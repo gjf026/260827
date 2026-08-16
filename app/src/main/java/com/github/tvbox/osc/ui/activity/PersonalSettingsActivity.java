@@ -57,6 +57,8 @@ public class PersonalSettingsActivity extends BaseActivity {
         initView();
         initData();
         initClickListener();
+        // 设置焦点到第一个设置项
+        findViewById(R.id.tvHomeLive).requestFocus();
     }
 
     private void initView() {

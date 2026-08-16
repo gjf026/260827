@@ -48,6 +48,8 @@ public class PlaySettingsActivity extends BaseActivity {
         initView();
         initData();
         initClickListener();
+        // 设置焦点到第一个设置项
+        findViewById(R.id.llPlay).requestFocus();
     }
 
     private void initView() {

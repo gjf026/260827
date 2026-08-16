@@ -34,6 +34,8 @@ public class DanmuSettingsActivity extends BaseActivity {
         initView();
         initData();
         initClickListener();
+        // 设置焦点到第一个设置项
+        findViewById(R.id.danmuOpen).requestFocus();
     }
 
     private void initView() {

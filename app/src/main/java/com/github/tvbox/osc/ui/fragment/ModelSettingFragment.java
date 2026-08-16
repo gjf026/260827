@@ -66,6 +66,7 @@ import java.util.List;
  */
 public class ModelSettingFragment extends BaseLazyFragment {
     private static final int REQUEST_LOCAL_CONFIG = 1001;
+    private View lastFocusedView = null; // 记住焦点位置
     private TextView tvDebugOpen;
     private TextView tvApi;
     private TextView tvApiLine;
@@ -195,6 +196,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
+                lastFocusedView = v; // 记住焦点位置
                 startActivity(new Intent(getActivity(), PlaySettingsActivity.class));
             }
         });
@@ -204,6 +206,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
+                lastFocusedView = v; // 记住焦点位置
                 startActivity(new Intent(getActivity(), DanmuSettingsActivity.class));
             }
         });
@@ -213,6 +216,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
+                lastFocusedView = v; // 记住焦点位置
                 startActivity(new Intent(getActivity(), PersonalSettingsActivity.class));
             }
         });
@@ -249,6 +253,9 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 findViewById(R.id.llDebug).setVisibility(View.VISIBLE);
             }
         };
+
+        // 设置焦点到第一个设置项（配置地址）
+        findViewById(R.id.llApi).requestFocus();
     }
 
     private void restartAppAfterConfigChanged() {
@@ -471,6 +478,15 @@ public class ModelSettingFragment extends BaseLazyFragment {
     public static SearchRemoteTvDialog loadingSearchRemoteTvDialog;
     public static List<String> remoteTvHostList;
     public static boolean foundRemoteTv;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 恢复焦点到之前的位置
+        if (lastFocusedView != null) {
+            lastFocusedView.requestFocus();
+        }
+    }
 
     @Override
     public void onDestroyView() {
