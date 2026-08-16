@@ -46,6 +46,7 @@ public class PersonalSettingsActivity extends BaseActivity {
     private TextView tvHistoryNum;
     private TextView tvm3u8AdText;
     private TextView tvDns;
+    private TextView tvHomeSourceLock;
 
     @Override
     protected int getLayoutResID() {
@@ -71,18 +72,20 @@ public class PersonalSettingsActivity extends BaseActivity {
         tvHistoryNum = findViewById(R.id.tvHistoryNum);
         tvm3u8AdText = findViewById(R.id.m3u8AdText);
         tvDns = findViewById(R.id.tvDns);
+        tvHomeSourceLock = findViewById(R.id.tvHomeSourceLock);
     }
 
     private void initData() {
         tvHomeDefaultShow.setText(Hawk.get(HawkConfig.DEFAULT_LOAD_LIVE, false) ? "直播" : "点播");
         tvHomeRec.setText(getHomeRecName(Hawk.get(HawkConfig.HOME_REC, HawkConfig.DEFAULT_HOME_REC)));
-        tvRecStyleText.setText(Hawk.get(HawkConfig.HOME_REC_STYLE, false) ? "是" : "否");
+        tvRecStyleText.setText(Hawk.get(HawkConfig.HOME_REC_STYLE, true) ? "是" : "否");
         tvSearchView.setText(getSearchView(Hawk.get(HawkConfig.SEARCH_VIEW, 0)));
         tvFastSearchText.setText(Hawk.get(HawkConfig.FAST_SEARCH_MODE, true) ? "开启" : "关闭");
-        tvHistoryMerge.setText(Hawk.get(HawkConfig.HISTORY_MERGE, false) ? "开启" : "关闭");
+        tvHistoryMerge.setText(Hawk.get(HawkConfig.HISTORY_MERGE, true) ? "开启" : "关闭");
         tvHistoryNum.setText(HistoryHelper.getHistoryNumName(Hawk.get(HawkConfig.HISTORY_NUM, 0)));
         tvm3u8AdText.setText(Hawk.get(HawkConfig.M3U8_PURIFY, false) ? "开启" : "关闭");
         tvDns.setText(OkGoHelper.dnsHttpsList.get(Hawk.get(HawkConfig.DOH_URL, 0)));
+        tvHomeSourceLock.setText(Hawk.get(HawkConfig.HOME_SOURCE_LOCK, true) ? "是" : "否");
     }
 
     private void initClickListener() {
@@ -139,8 +142,8 @@ public class PersonalSettingsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
-                Hawk.put(HawkConfig.HOME_REC_STYLE, !Hawk.get(HawkConfig.HOME_REC_STYLE, false));
-                tvRecStyleText.setText(Hawk.get(HawkConfig.HOME_REC_STYLE, false) ? "是" : "否");
+                Hawk.put(HawkConfig.HOME_REC_STYLE, !Hawk.get(HawkConfig.HOME_REC_STYLE, true));
+                tvRecStyleText.setText(Hawk.get(HawkConfig.HOME_REC_STYLE, true) ? "是" : "否");
             }
         });
 
@@ -152,11 +155,13 @@ public class PersonalSettingsActivity extends BaseActivity {
             }
         });
 
-        // 首页源锁定（占位项，不绑定功能）
+        // 首页源锁定设置
         findViewById(R.id.llHomeSourceLock).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 占位项，不执行任何操作
+                FastClickCheckUtil.check(v);
+                Hawk.put(HawkConfig.HOME_SOURCE_LOCK, !Hawk.get(HawkConfig.HOME_SOURCE_LOCK, true));
+                tvHomeSourceLock.setText(Hawk.get(HawkConfig.HOME_SOURCE_LOCK, true) ? "是" : "否");
             }
         });
 
@@ -212,7 +217,7 @@ public class PersonalSettingsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
-                boolean historyMerge = !Hawk.get(HawkConfig.HISTORY_MERGE, false);
+                boolean historyMerge = !Hawk.get(HawkConfig.HISTORY_MERGE, true);
                 Hawk.put(HawkConfig.HISTORY_MERGE, historyMerge);
                 tvHistoryMerge.setText(historyMerge ? "开启" : "关闭");
             }

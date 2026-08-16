@@ -95,7 +95,7 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     protected void onFragmentResume() {
         super.onFragmentResume();
         applyHomeMenu();
-        if (Hawk.get(HawkConfig.HOME_REC_STYLE, false)) {
+        if (Hawk.get(HawkConfig.HOME_REC_STYLE, true)) {
             tvHotList.setVisibility(View.VISIBLE);
             tvHotList.setHasFixedSize(true);
             int spanCount = 5;
@@ -134,7 +134,7 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
 
     private void applyHomeMenu() {
         if (tvHistory == null) return;
-        ArrayList<String> defaultMenus = new ArrayList<>(java.util.Arrays.asList("历史", "直播", "搜索", "推送", "收藏", "设置"));
+        ArrayList<String> defaultMenus = new ArrayList<>(java.util.Arrays.asList("搜索", "收藏"));
         ArrayList<String> menus = Hawk.get(HawkConfig.HOME_MENU, defaultMenus);
         tvHistory.setVisibility(menus.contains("历史") ? View.VISIBLE : View.GONE);
         tvLive.setVisibility(menus.contains("直播") ? View.VISIBLE : View.GONE);

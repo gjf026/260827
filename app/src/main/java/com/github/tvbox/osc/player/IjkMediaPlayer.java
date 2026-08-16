@@ -103,7 +103,7 @@ public class IjkMediaPlayer extends IjkPlayer {
                     break;
 
                 case CACHE_VIDEO:
-                    if (Hawk.get(HawkConfig.IJK_CACHE_PLAY, false)) {
+                    if (Hawk.get(HawkConfig.IJK_CACHE_PLAY, true)) {
                         String cachePath = FileUtils.getCachePath() + "/ijkcaches/";
                         File cacheFile = new File(cachePath);
                         if (!cacheFile.exists()) cacheFile.mkdirs();

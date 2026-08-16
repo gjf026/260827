@@ -227,7 +227,10 @@ public class HomeActivity extends BaseActivity {
                     if ((baseLazyFragment instanceof GridFragment) && !sortAdapter.getItem(position).filters.isEmpty()) {// 弹出筛选
                         ((GridFragment) baseLazyFragment).showFilter();
                     } else if (baseLazyFragment instanceof UserFragment) {
-                        showSiteSwitch();
+                        // 如果开启了首页源锁定，则不执行任何操作
+                        if (!Hawk.get(HawkConfig.HOME_SOURCE_LOCK, true)) {
+                            showSiteSwitch();
+                        }
                     }
                 }
             }

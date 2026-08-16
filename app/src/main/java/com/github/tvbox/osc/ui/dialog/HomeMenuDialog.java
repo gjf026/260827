@@ -26,7 +26,7 @@ public class HomeMenuDialog extends BaseDialog {
         if (context instanceof Activity) setOwnerActivity((Activity) context);
         setContentView(R.layout.dialog_home_menu);
         LinearLayout list = findViewById(R.id.homeMenuList);
-        ArrayList<String> checked = Hawk.get(HawkConfig.HOME_MENU, new ArrayList<>(MENUS));
+        ArrayList<String> checked = Hawk.get(HawkConfig.HOME_MENU, new ArrayList<>(Arrays.asList("搜索", "收藏")));
         for (String menu : MENUS) {
             AppCompatCheckBox checkBox = new AppCompatCheckBox(context);
             checkBox.setText(menu);
