@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="@dimen/vs_10"
-            android:text="首页菜单"
+            android:text="播放菜单"
             android:textColor="@color/dialog_text_primary"
             android:textSize="@dimen/ts_24"
             android:textStyle="bold" />
@@ -27,7 +27,7 @@
             android:maxHeight="@dimen/vs_400">
 
             <LinearLayout
-                android:id="@+id/homeMenuList"
+                android:id="@+id/playerMenuList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />

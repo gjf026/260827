@@ -11,7 +11,9 @@ import com.github.tvbox.osc.R;
 import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.base.BaseActivity;
 import com.github.tvbox.osc.ui.adapter.SelectDialogAdapter;
+import com.github.tvbox.osc.ui.dialog.DetailMenuDialog;
 import com.github.tvbox.osc.ui.dialog.HomeMenuDialog;
+import com.github.tvbox.osc.ui.dialog.PlayerMenuDialog;
 import com.github.tvbox.osc.ui.dialog.HomePasswordDialog;
 import com.github.tvbox.osc.ui.dialog.SelectDialog;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
@@ -144,6 +146,22 @@ public class PersonalSettingsActivity extends BaseActivity {
                 FastClickCheckUtil.check(v);
                 Hawk.put(HawkConfig.HOME_REC_STYLE, !Hawk.get(HawkConfig.HOME_REC_STYLE, true));
                 tvRecStyleText.setText(Hawk.get(HawkConfig.HOME_REC_STYLE, true) ? "是" : "否");
+            }
+        });
+
+        // 详情页菜单设置
+        findViewById(R.id.llDetailMenu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DetailMenuDialog(mContext).show();
+            }
+        });
+
+        // 播放菜单设置
+        findViewById(R.id.llPlayerMenu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new PlayerMenuDialog(mContext).show();
             }
         });
 

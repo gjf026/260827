@@ -595,6 +595,13 @@ public class DetailActivity extends BaseActivity {
         if (fullWindows) {
             setFullPreview(true);
         }
+
+        // 根据详情页菜单配置控制按钮显示/隐藏（"全屏"除外）
+        ArrayList<String> detailMenu = Hawk.get(HawkConfig.DETAIL_MENU, new ArrayList<>(java.util.Arrays.asList("加入收藏")));
+        tvQuickSearch.setVisibility(detailMenu.contains("快速搜索") ? View.VISIBLE : View.GONE);
+        tvDesc.setVisibility(detailMenu.contains("简介") ? View.VISIBLE : View.GONE);
+        tvCollect.setVisibility(detailMenu.contains("加入收藏") ? View.VISIBLE : View.GONE);
+        tvChangeSource.setVisibility(detailMenu.contains("切源") ? View.VISIBLE : View.GONE);
     }
 
     //解决类似海贼王的超长动漫 焦点滚动失败的问题

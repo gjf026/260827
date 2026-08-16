@@ -17,16 +17,17 @@ import com.orhanobut.hawk.Hawk;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class HomeMenuDialog extends BaseDialog {
+public class PlayerMenuDialog extends BaseDialog {
     private static final ArrayList<String> MENUS = new ArrayList<>(Arrays.asList(
-            "历史", "直播", "搜索", "推送", "收藏"));
+            "重播", "刷新", "默认", "播放倍速", "播放器", "IJK解码方式",
+            "片头", "片尾", "重置", "投屏", "字幕", "音轨", "视轨", "屏显"));
 
-    public HomeMenuDialog(@NonNull Context context) {
+    public PlayerMenuDialog(@NonNull Context context) {
         super(context);
         if (context instanceof Activity) setOwnerActivity((Activity) context);
-        setContentView(R.layout.dialog_home_menu);
-        LinearLayout list = findViewById(R.id.homeMenuList);
-        ArrayList<String> checked = Hawk.get(HawkConfig.HOME_MENU, new ArrayList<>(Arrays.asList("历史", "搜索", "收藏")));
+        setContentView(R.layout.dialog_player_menu);
+        LinearLayout list = findViewById(R.id.playerMenuList);
+        ArrayList<String> checked = Hawk.get(HawkConfig.PLAYER_MENU, new ArrayList<>(Arrays.asList("音轨", "视轨", "屏显")));
         for (String menu : MENUS) {
             AppCompatCheckBox checkBox = new AppCompatCheckBox(context);
             checkBox.setText(menu);
@@ -42,7 +43,7 @@ public class HomeMenuDialog extends BaseDialog {
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked && !checked.contains(menu)) checked.add(menu);
                 if (!isChecked) checked.remove(menu);
-                Hawk.put(HawkConfig.HOME_MENU, checked);
+                Hawk.put(HawkConfig.PLAYER_MENU, checked);
             });
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

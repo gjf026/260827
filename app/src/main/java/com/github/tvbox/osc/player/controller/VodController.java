@@ -73,6 +73,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -1117,6 +1118,23 @@ public class VodController extends BaseController {
         if (mPlayerConfig != null) updatePlayerCfgView();
         updateDanmuBtn();
         updateDanmuSearchUiBtn();
+
+        // 根据播放菜单配置控制按钮显示/隐藏（"下一集"和"上一集"除外）
+        ArrayList<String> playerMenu = Hawk.get(HawkConfig.PLAYER_MENU, new ArrayList<>(java.util.Arrays.asList("音轨", "视轨", "屏显")));
+        mPlayerRetry.setVisibility(playerMenu.contains("重播") ? VISIBLE : GONE);
+        mPlayrefresh.setVisibility(playerMenu.contains("刷新") ? VISIBLE : GONE);
+        mPlayerScaleBtn.setVisibility(playerMenu.contains("默认") ? VISIBLE : GONE);
+        mPlayerSpeedBtn.setVisibility(playerMenu.contains("播放倍速") ? VISIBLE : GONE);
+        mPlayerBtn.setVisibility(playerMenu.contains("播放器") ? VISIBLE : GONE);
+        mPlayerIJKBtn.setVisibility(playerMenu.contains("IJK解码方式") && mPlayerConfig != null && mPlayerConfig.optInt("pl") == 1 ? VISIBLE : GONE);
+        mPlayerTimeStartBtn.setVisibility(playerMenu.contains("片头") ? VISIBLE : GONE);
+        mPlayerTimeSkipBtn.setVisibility(playerMenu.contains("片尾") ? VISIBLE : GONE);
+        mPlayerTimeResetBtn.setVisibility(playerMenu.contains("重置") ? VISIBLE : GONE);
+        mCastBtn.setVisibility(playerMenu.contains("投屏") && Build.VERSION.SDK_INT >= 30 ? VISIBLE : GONE);
+        mZimuBtn.setVisibility(playerMenu.contains("字幕") ? VISIBLE : GONE);
+        mAudioTrackBtn.setVisibility(playerMenu.contains("音轨") ? VISIBLE : GONE);
+        mVideoTrackBtn.setVisibility(playerMenu.contains("视轨") ? VISIBLE : GONE);
+        mScreenDisplay.setVisibility(playerMenu.contains("屏显") ? VISIBLE : GONE);
     }
 
     void setLandscapePortrait() {
