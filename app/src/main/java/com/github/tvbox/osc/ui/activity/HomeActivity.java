@@ -345,6 +345,7 @@ public class HomeActivity extends BaseActivity {
     private void initData() {
         if (dataInitOk && jarInitOk) {
             loadHomeSort(false);
+            ApiConfig.get().refreshApiCollection();  // 加载线路列表
             if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 LOG.e("有");
             } else {

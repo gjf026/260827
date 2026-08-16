@@ -702,6 +702,27 @@ public class ApiConfig {
         return apiLines;
     }
 
+    public void refreshApiCollection() {
+        ArrayList<String> apiLines = Hawk.get(HawkConfig.API_LINE_LIST, new ArrayList<String>());
+        if (apiLines.isEmpty()) {
+            return;
+        }
+        String apiUrl = Hawk.get(HawkConfig.API_LINE_SOURCE, "");
+        fetchConfigAsync(apiUrl, configUrl(apiUrl), TempKey, new ConfigFetchCallback() {
+            @Override
+            public void success(String json) {
+                ArrayList<String> newLines = parseApiCollection(json);
+                if (!newLines.isEmpty()) {
+                    Hawk.put(HawkConfig.API_LINE_LIST, newLines);
+                }
+            }
+
+            @Override
+            public void error(String error) {
+            }
+        });
+    }
+
     private String trimJsonObject(String content) {
         if (content == null) {
             return "";
