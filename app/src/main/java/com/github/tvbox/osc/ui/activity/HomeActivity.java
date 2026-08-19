@@ -751,7 +751,7 @@ public class HomeActivity extends BaseActivity {
                 long pressDuration = System.currentTimeMillis() - menuKeyDownTime;
                 if (pressDuration >= LONG_PRESS_THRESHOLD) {
                     jumpActivity(SettingActivity.class);;
-                }else {
+                } else if (!Hawk.get(HawkConfig.HOME_SOURCE_LOCK, true)) {
                     showSiteSwitch();
                 }
             }
