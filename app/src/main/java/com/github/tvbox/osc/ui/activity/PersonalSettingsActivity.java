@@ -3,6 +3,7 @@ package com.github.tvbox.osc.ui.activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -284,23 +285,26 @@ public class PersonalSettingsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
-                if (!ApiConfig.get().wallpaper.isEmpty())
-                    OkGo.<File>get(ApiConfig.get().wallpaper).execute(new FileCallback(getFilesDir().getAbsolutePath(), "wp") {
-                        @Override
-                        public void onSuccess(Response<File> response) {
-                            ((BaseActivity) mContext).changeWallpaper(true);
-                        }
+                if (ApiConfig.get().wallpaper.isEmpty()) {
+                    Toast.makeText(mContext, "暂无可用壁纸", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                OkGo.<File>get(ApiConfig.get().wallpaper).execute(new FileCallback(getFilesDir().getAbsolutePath(), "wp") {
+                    @Override
+                    public void onSuccess(Response<File> response) {
+                        ((BaseActivity) mContext).changeWallpaper(true);
+                    }
 
-                        @Override
-                        public void onError(Response<File> response) {
-                            super.onError(response);
-                        }
+                    @Override
+                    public void onError(Response<File> response) {
+                        super.onError(response);
+                    }
 
-                        @Override
-                        public void downloadProgress(Progress progress) {
-                            super.downloadProgress(progress);
-                        }
-                    });
+                    @Override
+                    public void downloadProgress(Progress progress) {
+                        super.downloadProgress(progress);
+                    }
+                });
             }
         });
 

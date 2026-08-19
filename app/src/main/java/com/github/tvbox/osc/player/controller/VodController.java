@@ -1037,16 +1037,13 @@ public class VodController extends BaseController {
                 if (listener != null) listener.clickCast();
             }
         });
-        if (Build.VERSION.SDK_INT < 30) {
-            mCastBtn.setVisibility(GONE);
-        } else {
-            mCastBtn.setVisibility(VISIBLE);
-        }
+        mCastBtn.setVisibility(GONE); // 默认隐藏，由 updatePortraitMenu 根据 PLAYER_MENU 控制
         mScreenDisplay.setNextFocusRightId(R.id.play_next);
         mNextBtn.setNextFocusLeftId(R.id.screen_display);
     }
 
     private void hideLiveAboutBtn() {
+        ArrayList<String> playerMenu = Hawk.get(HawkConfig.PLAYER_MENU, new ArrayList<>(java.util.Arrays.asList("音轨", "视轨", "屏显")));
         if (mControlWrapper != null && mControlWrapper.getDuration() == 0) {
             mPlayerSpeedBtn.setVisibility(GONE);
             mPlayerTimeStartEndText.setVisibility(GONE);
@@ -1054,11 +1051,11 @@ public class VodController extends BaseController {
             mPlayerTimeSkipBtn.setVisibility(GONE);
             mPlayerTimeResetBtn.setVisibility(GONE);
         } else {
-            mPlayerSpeedBtn.setVisibility(View.VISIBLE);
+            mPlayerSpeedBtn.setVisibility(playerMenu.contains("播放倍速") ? View.VISIBLE : GONE);
             mPlayerTimeStartEndText.setVisibility(GONE);
-            mPlayerTimeStartBtn.setVisibility(View.VISIBLE);
-            mPlayerTimeSkipBtn.setVisibility(View.VISIBLE);
-            mPlayerTimeResetBtn.setVisibility(View.VISIBLE);
+            mPlayerTimeStartBtn.setVisibility(playerMenu.contains("片头") ? View.VISIBLE : GONE);
+            mPlayerTimeSkipBtn.setVisibility(playerMenu.contains("片尾") ? View.VISIBLE : GONE);
+            mPlayerTimeResetBtn.setVisibility(playerMenu.contains("重置") ? View.VISIBLE : GONE);
         }
     }
 
@@ -1106,15 +1103,7 @@ public class VodController extends BaseController {
         }
 
         mParseRoot.setVisibility(showParse ? VISIBLE : GONE);
-        mPlayrefresh.setVisibility(VISIBLE);
-        mPlayerScaleBtn.setVisibility(VISIBLE);
         mPlayerTimeStartEndText.setVisibility(GONE);
-        mPlayerTimeStartBtn.setVisibility(VISIBLE);
-        mPlayerTimeSkipBtn.setVisibility(VISIBLE);
-        mPlayerTimeResetBtn.setVisibility(VISIBLE);
-        mZimuBtn.setVisibility(VISIBLE);
-        mScreenDisplay.setVisibility(VISIBLE);
-        mCastBtn.setVisibility(Build.VERSION.SDK_INT < 30 ? GONE : VISIBLE);
         if (mPlayerConfig != null) updatePlayerCfgView();
         updateDanmuBtn();
         updateDanmuSearchUiBtn();
@@ -1183,15 +1172,16 @@ public class VodController extends BaseController {
             mPlayerBtn.setText(getPlayerShortName(playerType));
             mPlayerScaleBtn.setText(PlayerHelper.getScaleName(mPlayerConfig.getInt("sc")));
             mPlayerIJKBtn.setText(getCodecShortName(mPlayerConfig.getString("ijk")));
-            mPlayerIJKBtn.setVisibility(playerType == 1 ? VISIBLE : GONE);
-            mPlayerScaleBtn.setText(PlayerHelper.getScaleName(mPlayerConfig.getInt("sc")));
             mPlayerSpeedBtn.setText(mPlayerConfig.getDouble("sp") + "x");
             int start = mPlayerConfig.getInt("st");
             int end = mPlayerConfig.getInt("et");
             mPlayerTimeStartBtn.setText(start == 0 ? "片头" : stringForTime(start * 1000));
             mPlayerTimeSkipBtn.setText(end == 0 ? "片尾" : stringForTime(end * 1000));
-            mAudioTrackBtn.setVisibility((playerType == 1 || playerType == 2) ? VISIBLE : GONE);
-            mVideoTrackBtn.setVisibility((playerType == 1 || playerType == 2) ? VISIBLE : GONE);
+            // 根据 PLAYER_MENU 配置控制按钮可见性
+            ArrayList<String> playerMenu = Hawk.get(HawkConfig.PLAYER_MENU, new ArrayList<>(java.util.Arrays.asList("音轨", "视轨", "屏显")));
+            mPlayerIJKBtn.setVisibility(playerMenu.contains("IJK解码方式") && playerType == 1 ? VISIBLE : GONE);
+            mAudioTrackBtn.setVisibility(playerMenu.contains("音轨") && (playerType == 1 || playerType == 2) ? VISIBLE : GONE);
+            mVideoTrackBtn.setVisibility(playerMenu.contains("视轨") && (playerType == 1 || playerType == 2) ? VISIBLE : GONE);
         } catch (JSONException e) {
             e.printStackTrace();
         }

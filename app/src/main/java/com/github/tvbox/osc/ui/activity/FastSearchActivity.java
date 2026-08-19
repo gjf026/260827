@@ -32,10 +32,12 @@ import com.github.tvbox.osc.ui.adapter.FastListAdapter;
 import com.github.tvbox.osc.ui.adapter.FastSearchAdapter;
 import com.github.tvbox.osc.ui.adapter.SearchWordAdapter;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
+import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.HistoryHelper;
 import com.github.tvbox.osc.util.SearchHelper;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.lzy.okgo.OkGo;
+import com.orhanobut.hawk.Hawk;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
@@ -161,7 +163,10 @@ public class FastSearchActivity extends BaseActivity {
         });
 
         mGridView.setHasFixedSize(true);
-        mGridView.setLayoutManager(new V7GridLayoutManager(this.mContext, 4));
+        if (Hawk.get(HawkConfig.SEARCH_VIEW, 0) == 0)
+            mGridView.setLayoutManager(new V7LinearLayoutManager(this.mContext, 1, false));
+        else
+            mGridView.setLayoutManager(new V7GridLayoutManager(this.mContext, 4));
 
         searchAdapter = new FastSearchAdapter();
         mGridView.setAdapter(searchAdapter);
@@ -199,7 +204,10 @@ public class FastSearchActivity extends BaseActivity {
         });
 
 
-        mGridViewFilter.setLayoutManager(new V7GridLayoutManager(this.mContext, 4));
+        if (Hawk.get(HawkConfig.SEARCH_VIEW, 0) == 0)
+            mGridViewFilter.setLayoutManager(new V7LinearLayoutManager(this.mContext, 1, false));
+        else
+            mGridViewFilter.setLayoutManager(new V7GridLayoutManager(this.mContext, 4));
         searchAdapterFilter = new FastSearchAdapter();
         mGridViewFilter.setAdapter(searchAdapterFilter);
         mGridViewFilter.setOnItemListener(new TvRecyclerView.OnItemListener() {
