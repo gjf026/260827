@@ -345,7 +345,7 @@ public class HomeActivity extends BaseActivity {
                 updateSortData(newSortData);
                 initViewPager(absXml);
                 updateHomeRec(absXml);
-                if (home != null && home.getName() != null && !home.getName().isEmpty()) tvName.setText(home.getName());
+      //          if (home != null && home.getName() != null && !home.getName().isEmpty()) tvName.setText(home.getName());
                 tvName.clearAnimation();
                 homeSortLoading = false;
                 loadingSourceKey = null;
@@ -520,7 +520,7 @@ public class HomeActivity extends BaseActivity {
         homeSortLoading = keepCurrentContent;
         if (keepCurrentContent && home != null && home.getName() != null && !home.getName().isEmpty()) {
             previousHomeName = tvName.getText() == null ? null : tvName.getText().toString();
-            tvName.setText(home.getName());
+    //        tvName.setText(home.getName());
         }
         tvNameAnimation();
         if (home == null) {
@@ -705,7 +705,7 @@ public class HomeActivity extends BaseActivity {
         if (tvName == null || tvDate == null) {
             return;
         }
-        tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.ts_30));
+ //       tvName.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.ts_30));
         tvDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.ts_26));
     }
 
@@ -990,7 +990,7 @@ public class HomeActivity extends BaseActivity {
             ApiConfig.get().setSourceBean(previousHomeSource);
         }
         if (previousHomeName != null && !previousHomeName.isEmpty()) {
-            tvName.setText(previousHomeName);
+  //          tvName.setText(previousHomeName);
         }
         previousHomeSource = null;
         previousHomeName = null;
